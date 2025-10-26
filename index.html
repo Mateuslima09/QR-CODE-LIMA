@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gerador de QR Code</title>
+    <!-- Favicon: pequeno ícone do tipo QR ao lado do nome da aba -->
+    <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2064%2064'%3E%3Crect%20width='64'%20height='64'%20rx='8'%20fill='%23667eea'/%3E%3Crect%20x='10'%20y='10'%20width='18'%20height='18'%20fill='%23ffffff'/%3E%3Crect%20x='36'%20y='10'%20width='18'%20height='18'%20fill='%23ffffff'/%3E%3Crect%20x='10'%20y='36'%20width='18'%20height='18'%20fill='%23ffffff'/%3E%3Crect%20x='30'%20y='30'%20width='6'%20height='6'%20fill='%23000'/%3E%3Crect%20x='40'%20y='30'%20width='6'%20height='6'%20fill='%23000'/%3E%3C/svg%3E">
+    <meta name="theme-color" content="#667eea">
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -22,8 +25,9 @@
             border-radius: 15px;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
             text-align: center;
-            max-width: 500px;
+            max-width: 520px;
             width: 90%;
+            color: #333;
         }
         h1 {
             margin-bottom: 30px;
@@ -41,10 +45,35 @@
             transition: border-color 0.3s;
             resize: vertical;
             min-height: 100px;
+            background: #fff;
+            color: #333;
         }
         textarea:focus {
             outline: none;
             border-color: #667eea;
+        }
+        .controls {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+            margin-top: 8px;
+        }
+        .controls .row {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        .small-number {
+            width: 80px;
+            padding: 8px;
+            border-radius: 8px;
+            border: 2px solid #ddd;
+            text-align: center;
+            background: #fff;
+            color: #333;
         }
         label {
             display: block;
@@ -62,6 +91,8 @@
             font-size: 16px;
             box-sizing: border-box;
             transition: border-color 0.3s;
+            background: #fff;
+            color: #333;
         }
         input[type="number"]:focus {
             outline: none;
@@ -71,9 +102,9 @@
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             border: none;
-            padding: 15px 30px;
+            padding: 12px 22px;
             border-radius: 8px;
-            font-size: 16px;
+            font-size: 15px;
             cursor: pointer;
             transition: transform 0.2s, box-shadow 0.2s;
             margin-bottom: 20px;
@@ -91,7 +122,7 @@
         #counter {
             margin-top: 20px;
             font-size: 14px;
-            color: #666;
+            color: #cfcfcf;
         }
         #reset-btn {
             background: #e74c3c;
@@ -120,11 +151,23 @@
     <div class="container">
         <h1>Gerador de QR Code</h1>
         <textarea id="text-input" placeholder="Cole os IDs (um por linha) para gerar os QR Codes"></textarea>
-        <label for="size-input">Tamanho do QR Code (px):</label>
-        <input type="number" id="size-input" min="100" max="500" value="256">
-    <button id="generate-btn">Gerar QR Codes</button>
-    <button id="clear-btn" style="margin-left:8px; background:#95a5a6;">Limpar IDs</button>
-    <div id="counter">QR Codes gerados: <span id="count">0</span> / <span id="max-count">500</span></div>
+        <div class="controls">
+            <div class="row">
+                <div style="display:flex;align-items:center;gap:8px;">
+                    <label for="size-input" style="margin:0;color:#555;font-weight:600;">Tamanho do QR Code (px):</label>
+                    <input type="number" id="size-input" min="100" max="500" value="256" class="small-number">
+                </div>
+                <div style="display:flex;align-items:center;gap:8px;">
+                    <label for="spacing-input" style="margin:0;color:#555;font-weight:600;">Espaçamento (px):</label>
+                    <input type="number" id="spacing-input" min="0" max="200" value="20" class="small-number">
+                </div>
+            </div>
+            <div class="row">
+                <button id="generate-btn">Gerar QR Codes</button>
+                <button id="clear-btn" style="background:#95a5a6;">Limpar IDs</button>
+            </div>
+        </div>
+        <div id="counter">QR Codes gerados: <span id="count">0</span> / <span id="max-count">500</span></div>
         <button id="reset-btn" style="display: none;">Resetar Contador</button>
         <div id="limit-message">Limite de 500 QR Codes atingido!</div>
     </div>
@@ -137,6 +180,7 @@
         const sizeInput = document.getElementById('size-input');
         const generateBtn = document.getElementById('generate-btn');
         const counterSpan = document.getElementById('count');
+    const spacingInput = document.getElementById('spacing-input');
     const limitMessage = document.getElementById('limit-message');
     const resetBtn = document.getElementById('reset-btn');
     const clearBtn = document.getElementById('clear-btn');
@@ -207,6 +251,9 @@
 
             const size = parseInt(sizeInput.value) || 256;
 
+            // lê espaçamento do input (em px)
+            const spacing = parseInt(spacingInput.value, 10) || 20;
+
             // Renderiza os QR Codes na mesma aba dentro do elemento #results
             const resultsDiv = document.getElementById('results');
             const containerDiv = document.querySelector('.container');
@@ -215,9 +262,17 @@
             let html = `
                 <div style="text-align:center;">
                     <h1>QR Codes Gerados (${numQRs} itens)</h1>
-                    <button id="back-btn" style="background:#667eea;color:#fff;border:none;padding:8px 12px;border-radius:6px;cursor:pointer;margin:10px;">Voltar</button>
-                    <div class="list" style="display:flex;flex-direction:column;gap:20px;align-items:center;margin-top:20px;">
+                    <button id="back-btn" style="background:#ff7f50;color:#fff;border:none;padding:8px 12px;border-radius:6px;cursor:pointer;margin:10px;box-shadow:0 6px 12px rgba(0,0,0,0.15);">Voltar</button>
+                    <div class="list" style="display:flex;flex-direction:column;gap:${spacing}px;align-items:center;margin-top:20px;">
             `;
+
+            // calcular tamanho visível do QR para não estourar o cartão quando a imagem for muito grande
+            const viewportWidth = window.innerWidth || document.documentElement.clientWidth || 800;
+            // deixar o card no máximo 60% da largura da tela ou 520px
+            const maxCardOuter = Math.min(520, Math.floor(viewportWidth * 0.6));
+            // espaço extra do card (padding + bordas)
+            const cardPadding = 40; // valor aproximado usado no estilo
+            const displaySize = Math.max(50, Math.min(size, Math.max(100, maxCardOuter - cardPadding)));
 
             // usar índice para numerar cada QR
             lines.forEach((line, idx) => {
@@ -232,10 +287,10 @@
 
                 // cada card terá um único QR centralizado (horizontal) e um rótulo com o número
                 html += `
-                    <div class="card" style="width: ${Math.min(size + 40, 520)}px; background:white;padding:12px;border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,0.08);text-align:center;">
+                    <div class="card" style="width: ${displaySize + 40}px; background:white;padding:12px;border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,0.08);text-align:center;">
                         <div style="font-weight:bold;margin-bottom:6px;">QR Code ${number} - ID: ${escapedLine}</div>
                         <div style="display:flex;justify-content:center;">
-                            <img src="${qrUrl}" alt="QR Code para ${escapedLine}" width="${size}" height="${size}" style="border-radius:6px;border:1px solid #ddd;" />
+                            <img src="${qrUrl}" alt="QR Code para ${escapedLine}" width="${displaySize}" height="${displaySize}" style="border-radius:6px;border:1px solid #ddd;max-width:100%;height:auto;" />
                         </div>
                     </div>
                 `;
