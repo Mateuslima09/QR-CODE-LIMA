@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerador de QR Code</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            color: #333;
+        }
+        .container {
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            max-width: 500px;
+            width: 90%;
+        }
+        h1 {
+            margin-bottom: 30px;
+            color: #4a4a4a;
+            font-size: 2.5em;
+        }
+        textarea {
+            width: 100%;
+            padding: 15px;
+            margin-bottom: 20px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            box-sizing: border-box;
+            transition: border-color 0.3s;
+            resize: vertical;
+            min-height: 100px;
+        }
+        textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        label {
+            display: block;
+            margin: 10px 0 5px 0;
+            text-align: left;
+            color: #555;
+            font-weight: bold;
+        }
+        input[type="number"] {
+            width: 120px;
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            box-sizing: border-box;
+            transition: border-color 0.3s;
+        }
+        input[type="number"]:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            margin-bottom: 20px;
+        }
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        #counter {
+            margin-top: 20px;
+            font-size: 14px;
+            color: #666;
+        }
+        #reset-btn {
+            background: #e74c3c;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            margin-top: 10px;
+        }
+        #reset-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        #limit-message {
+            display: none;
+            color: #e74c3c;
+            font-weight: bold;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Gerador de QR Code</h1>
+        <textarea id="text-input" placeholder="Cole os IDs (um por linha) para gerar os QR Codes"></textarea>
+        <label for="size-input">Tamanho do QR Code (px):</label>
+        <input type="number" id="size-input" min="100" max="500" value="256">
+    <button id="generate-btn">Gerar QR Codes</button>
+    <button id="clear-btn" style="margin-left:8px; background:#95a5a6;">Limpar IDs</button>
+    <div id="counter">QR Codes gerados: <span id="count">0</span> / <span id="max-count">500</span></div>
+        <button id="reset-btn" style="display: none;">Resetar Contador</button>
+        <div id="limit-message">Limite de 500 QR Codes atingido!</div>
+    </div>
+
+    <!-- Área onde os QR Codes gerados serão exibidos na mesma aba -->
+    <div id="results" style="display:none; padding:20px; max-width:1200px; margin:20px auto;"></div>
+
+    <script>
+        const textInput = document.getElementById('text-input');
+        const sizeInput = document.getElementById('size-input');
+        const generateBtn = document.getElementById('generate-btn');
+        const counterSpan = document.getElementById('count');
+    const limitMessage = document.getElementById('limit-message');
+    const resetBtn = document.getElementById('reset-btn');
+    const clearBtn = document.getElementById('clear-btn');
+
+        // máximo de QR Codes permitidos (mude aqui para ajustar o limite)
+        const MAX_QR = 500;
+
+        let count = parseInt(localStorage.getItem('qrCount')) || 0;
+        // atualiza o texto do limite exibido na UI
+        document.getElementById('max-count').textContent = MAX_QR;
+        updateCounter();
+
+        function updateCounter() {
+            counterSpan.textContent = count;
+            // mostrar o botão de reset sempre que houver pelo menos 1 QR gerado
+            resetBtn.style.display = (count > 0) ? 'inline-block' : 'none';
+
+            if (count >= MAX_QR) {
+                generateBtn.disabled = true;
+                limitMessage.style.display = 'block';
+            } else {
+                generateBtn.disabled = false;
+                limitMessage.style.display = 'none';
+            }
+        }
+
+        resetBtn.addEventListener('click', () => {
+            if (confirm('Tem certeza que deseja resetar o contador? Isso limpará o histórico de QR Codes gerados.')) {
+                count = 0;
+                localStorage.removeItem('qrCount');
+                updateCounter();
+            }
+        });
+
+        // Botão para limpar o campo de IDs (textarea)
+        clearBtn.addEventListener('click', () => {
+            if (!textInput.value.trim()) {
+                // nada para limpar
+                textInput.value = '';
+                textInput.focus();
+                return;
+            }
+            if (confirm('Deseja limpar o campo de IDs?')) {
+                textInput.value = '';
+                textInput.focus();
+            }
+        });
+
+        generateBtn.addEventListener('click', () => {
+            const inputText = textInput.value.trim();
+            if (!inputText) {
+                alert('Por favor, cole os IDs para gerar os QR Codes.');
+                return;
+            }
+            if (count >= MAX_QR) {
+                alert(`Limite de ${MAX_QR} QR Codes atingido. Use o botão de reset se necessário.`);
+                return;
+            }
+
+            const lines = inputText.split('\n').map(line => line.trim()).filter(line => line.length > 0);
+            const numQRs = lines.length;
+            const remaining = MAX_QR - count;
+
+            if (numQRs > remaining) {
+                alert(`Você está tentando gerar ${numQRs} QR Codes, mas só restam ${remaining} no limite. Gere menos ou resete o contador.`);
+                return;
+            }
+
+            const size = parseInt(sizeInput.value) || 256;
+
+            // Renderiza os QR Codes na mesma aba dentro do elemento #results
+            const resultsDiv = document.getElementById('results');
+            const containerDiv = document.querySelector('.container');
+
+            // Monta o HTML dos resultados (um QR por linha e numerado)
+            let html = `
+                <div style="text-align:center;">
+                    <h1>QR Codes Gerados (${numQRs} itens)</h1>
+                    <button id="back-btn" style="background:#667eea;color:#fff;border:none;padding:8px 12px;border-radius:6px;cursor:pointer;margin:10px;">Voltar</button>
+                    <div class="list" style="display:flex;flex-direction:column;gap:20px;align-items:center;margin-top:20px;">
+            `;
+
+            // usar índice para numerar cada QR
+            lines.forEach((line, idx) => {
+                const number = idx + 1;
+                const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=${size}x${size}&data=${encodeURIComponent(line)}`;
+                const escapedLine = line
+                    .replace(/&/g, '&amp;')
+                    .replace(/</g, '&lt;')
+                    .replace(/>/g, '&gt;')
+                    .replace(/"/g, '&quot;')
+                    .replace(/'/g, '&#39;');
+
+                // cada card terá um único QR centralizado (horizontal) e um rótulo com o número
+                html += `
+                    <div class="card" style="width: ${Math.min(size + 40, 520)}px; background:white;padding:12px;border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,0.08);text-align:center;">
+                        <div style="font-weight:bold;margin-bottom:6px;">QR Code ${number} - ID: ${escapedLine}</div>
+                        <div style="display:flex;justify-content:center;">
+                            <img src="${qrUrl}" alt="QR Code para ${escapedLine}" width="${size}" height="${size}" style="border-radius:6px;border:1px solid #ddd;" />
+                        </div>
+                    </div>
+                `;
+            });
+
+            html += `</div></div>`;
+
+            // Insere o HTML no container de resultados e mostra/oculta seções
+            resultsDiv.innerHTML = html;
+            containerDiv.style.display = 'none';
+            resultsDiv.style.display = 'block';
+
+            // Voltar ao formulário
+            document.getElementById('back-btn').addEventListener('click', () => {
+                resultsDiv.style.display = 'none';
+                containerDiv.style.display = 'block';
+            });
+
+            // Update count
+            count += numQRs;
+            localStorage.setItem('qrCount', count);
+            updateCounter();
+
+            // Clear input
+            textInput.value = '';
+        });
+    </script>
+</body>
+</html>

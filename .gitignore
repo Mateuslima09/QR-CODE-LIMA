@@ -1,0 +1,7 @@
+# Ignorar arquivos temporários
+.DS_Store
+Thumbs.db
+node_modules/
+.env
+dist/
+*.log
