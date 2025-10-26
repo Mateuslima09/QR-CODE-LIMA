@@ -1,62 +1,25 @@
-# Gerador de QR — Deploy rápido
+ # Gerador de QR Code (qr-generator)
 
-Este diretório contém um site estático simples (`index.html`) que gera QR Codes no navegador.
+Este projeto é um gerador simples de QR Codes que roda inteiramente no navegador. Cole uma lista de IDs (um por linha) e o site gera um QR code por ID, exibido em cartões numerados. Ele foi pensado para uso rápido sem servidor — ideal para imprimir ou baixar QR codes.
 
-Quer deixar o site no ar sem manter o computador ligado? As opções mais simples e grátis são:
+Funcionalidades principais
+- Cole IDs (um por linha) e gere QR Codes em lote.
+- Controle do tamanho do QR (px) e espaçamento vertical entre os cartões.
+- Limpeza do campo de IDs e contador que registra quantos QR foram gerados (localStorage).
+- Renderização em página única com botão "Voltar" para retornar ao formulário.
 
-- GitHub Pages
-- Netlify (drag & drop ou conectar repositório)
-- Vercel (conectar repositório)
+Como usar localmente
+1. Abra `index.html` em um navegador moderno (Chrome, Edge, Firefox).
+2. Cole os IDs no campo de texto (um por linha).
+3. Ajuste "Tamanho do QR Code (px)" e "Espaçamento (px)" conforme desejar.
+4. Clique em "Gerar QR Codes". Cada QR será exibido em um cartão numerado.
+5. Para retornar ao formulário, clique em "Voltar". Use "Limpar IDs" para apagar o textarea.
 
-Escolha rápida recomendada: GitHub Pages (grátis e rápido para sites estáticos).
+Nota sobre o contador
+- O contador de QR gerados é armazenado em `localStorage` no navegador (chave `qrCount`). Use o botão "Resetar Contador" para zerá-lo.
 
-## Publicar com GitHub Pages (passos rápidos)
+Limitações e comportamento
+- O projeto usa um serviço externo (`api.qrserver.com`) para gerar as imagens dos QR Codes. Se preferir gerar QR totalmente offline, é possível integrar uma biblioteca JavaScript (ex: qrcodejs).
+- O tamanho solicitado para o QR pode ser automaticamente reduzido para caber na tela — o site aplica um limite responsivo para evitar que a imagem "estoure" o cartão.
 
-1. Crie um repositório no GitHub (página: https://github.com/new). Nome pode ser `qr-generator`.
-2. No seu PC abra PowerShell e execute (substitua `<URL-DO-REPO>` pela URL do repositório GitHub):
 
-```powershell
-cd 'C:\Users\barce\Desktop\qr-generator'
-git init
-git add .
-git commit -m "Initial commit - gerador de QR"
-# Exemplo de URL HTTPS: https://github.com/seuUsuario/qr-generator.git
-git remote add origin <URL-DO-REPO>
-git branch -M main
-git push -u origin main
-```
-
-3. No GitHub, vá em Settings → Pages e selecione a branch `main` e `/ (root)` como fonte. Salve.
-4. Após alguns segundos/minutos, seu site estará disponível em `https://seuUsuario.github.io/qr-generator/`.
-
-Observações:
-- Se quiser que a URL seja `https://seuUsuario.github.io/` use um repositório chamado `seuUsuario.github.io` (coloque os arquivos na branch `main`).
-- Para domínio customizado, configure o CNAME e registre o domínio no painel de Pages.
-
-## Deploy alternativo rápido (Netlify)
-
-1. Acesse https://app.netlify.com/drop
-2. Arraste a pasta `qr-generator` (ou apenas o conteúdo) para a área de upload.
-3. O site será publicado automaticamente com HTTPS.
-
-Ou conecte seu repositório Git ao Netlify para deploy automático a cada push.
-
-## Vercel / Cloudflare Pages
-
-- Ambos permitem conectar o repositório Git e fazem deploy automático; para HTML puro não é necessário build.
-
-## Notas sobre produção
-
-- Se for gerar muitos QR Codes de uma vez, considere gerar client-side com uma biblioteca (ex: qrcodejs) para evitar depender de uma API externa.
-- Para domínio customizado e HTTPS, os provedores acima costumam automatizar o Let's Encrypt.
-
-## Quer que eu faça por você?
-
-Posso preparar os commits locais e instruções prontas. Me diga qual provedor prefere (GitHub Pages, Netlify, Vercel) e eu:
-
-- preparo um `README.md` (feito) e `.gitignore` (posso adicionar agora),
-- escrevo os comandos exatos para você colar no PowerShell, ou
-- se quiser, eu gero um ZIP pronto e instruções passo-a-passo.
-
----
-Arquivo: `index.html` — abra no navegador para testar localmente antes de fazer deploy.
