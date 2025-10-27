@@ -8,34 +8,39 @@
     <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2064%2064'%3E%3Crect%20width='64'%20height='64'%20rx='8'%20fill='%23667eea'/%3E%3Crect%20x='10'%20y='10'%20width='18'%20height='18'%20fill='%23ffffff'/%3E%3Crect%20x='36'%20y='10'%20width='18'%20height='18'%20fill='%23ffffff'/%3E%3Crect%20x='10'%20y='36'%20width='18'%20height='18'%20fill='%23ffffff'/%3E%3Crect%20x='30'%20y='30'%20width='6'%20height='6'%20fill='%23000'/%3E%3Crect%20x='40'%20y='30'%20width='6'%20height='6'%20fill='%23000'/%3E%3C/svg%3E">
     <meta name="theme-color" content="#667eea">
     <style>
+        /* decorative header removed - no static placeholder here */
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            margin: 0;
-            padding: 0;
             display: flex;
-            justify-content: center;
-            align-items: center;
+            align-items: center; /* center vertically */
+            justify-content: center; /* center horizontally */
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+            background: linear-gradient(135deg, #7b8ef7 0%, #7b5ac7 100%);
             min-height: 100vh;
-            color: #333;
+            margin: 0;
+            padding: 48px 20px; /* small padding so centered container doesn't touch edges */
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
         }
+
         .container {
-            background: white;
-            padding: 40px;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-            text-align: center;
-            max-width: 520px;
-            width: 90%;
-            color: #333;
-        }
-        h1 {
-            margin-bottom: 30px;
-            color: #4a4a4a;
-            font-size: 2.5em;
-        }
-        textarea {
             width: 100%;
+            max-width: 560px;
+            margin: 0 auto;
+            background: #fff;
+            padding: 44px 48px;
+            border-radius: 12px;
+            box-shadow: 0 18px 40px rgba(10,18,40,0.12);
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 32px;
+            margin: 0 0 30px 0; /* more space below title */
+            color: #313131;
+        }
+
+        textarea {
+            width: 92%;
             padding: 15px;
             margin-bottom: 20px;
             border: 2px solid #ddd;
@@ -99,7 +104,7 @@
             border-color: #667eea;
         }
         button {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #667eea 0%, #845ad1 100%);
             color: white;
             border: none;
             padding: 12px 22px;
@@ -120,9 +125,10 @@
             box-shadow: none;
         }
         #counter {
-            margin-top: 20px;
-            font-size: 14px;
-            color: #cfcfcf;
+            margin-top: 18px;
+            font-size: 13px;
+            color: #bdbdbd;
+            text-align: center;
         }
         #reset-btn {
             background: #e74c3c;
@@ -145,9 +151,78 @@
             font-weight: bold;
             margin-top: 20px;
         }
+        /* Cards should keep readable text on light card background even in dark mode */
+        .card {
+            background: #fff !important;
+            color: #222 !important;
+            position: relative;
+            z-index: 2; /* ensure cards sit above background canvas */
+        }
+        .card .card-title {
+            color: #222 !important;
+            font-weight: 700;
+            margin-bottom: 12px;
+        }
+        /* make sure QR images remain visible in dark mode */
+        .card img {
+            filter: none !important;
+            background: #fff !important;
+            display: block;
+            z-index: 3;
+        }
+        /* ensure dark mode doesn't wash out card text */
+        body.dark .card {
+            background: #fff !important;
+            color: #222 !important;
+        }
+        /* (removed duplicate simple grid styles — using JS-driven animated QR) */
+        /* Theme toggle (top-right) */
+        #theme-toggle {
+            position: fixed;
+            top: 14px;
+            right: 14px;
+            width: 44px;
+            height: 44px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255,255,255,0.95);
+            box-shadow: 0 6px 16px rgba(0,0,0,0.12);
+            cursor: pointer;
+            z-index: 9999;
+            transition: background 0.25s, transform 0.12s;
+        }
+        #theme-toggle:active { transform: scale(0.96); }
+        #theme-toggle svg { width:20px; height:20px; display:block; }
+
+        /* Dark theme overrides */
+        body.dark {
+            background: linear-gradient(135deg, #0f1724 0%, #0b1220 100%);
+            color: #ddd;
+        }
+        body.dark .container {
+            background: #0b0d10;
+            color: #e6e6e6;
+            box-shadow: 0 14px 40px rgba(2,6,23,0.6);
+        }
+        body.dark h1 { color: #f3f3f3; }
+        body.dark textarea { background: rgba(255,255,255,0.02); color:#ddd; border-color: rgba(255,255,255,0.06); }
+        body.dark input[type="number"], body.dark .small-number { background: rgba(255,255,255,0.02); color:#fff; border-color: rgba(255,255,255,0.06); }
+        body.dark label { color: #cfcfcf; }
+        body.dark button { box-shadow: 0 8px 20px rgba(102,110,234,0.12); }
+        body.dark #theme-toggle { background: rgba(20,24,34,0.85); }
     </style>
 </head>
 <body>
+    <!-- Canvas de fundo para partículas interativas -->
+    <canvas id="bg-canvas"></canvas>
+    <div id="theme-toggle" title="Alternar tema" aria-label="Alternar tema" role="button">
+        <!-- Sun / Moon icon (will be swapped by JS for a11y) -->
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z" fill="#3b82f6"/>
+        </svg>
+    </div>
     <div class="container">
         <h1>Gerador de QR Code</h1>
         <textarea id="text-input" placeholder="Cole os IDs (um por linha) para gerar os QR Codes"></textarea>
@@ -287,10 +362,10 @@
 
                 // cada card terá um único QR centralizado (horizontal) e um rótulo com o número
                 html += `
-                    <div class="card" style="width: ${displaySize + 40}px; background:white;padding:12px;border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,0.08);text-align:center;">
-                        <div style="font-weight:bold;margin-bottom:6px;">QR Code ${number} - ID: ${escapedLine}</div>
+                    <div class="card" style="width: ${displaySize + 40}px; padding:12px;border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,0.08);text-align:center;">
+                        <div class="card-title">QR Code ${number} - ID: ${escapedLine}</div>
                         <div style="display:flex;justify-content:center;">
-                            <img src="${qrUrl}" alt="QR Code para ${escapedLine}" width="${displaySize}" height="${displaySize}" style="border-radius:6px;border:1px solid #ddd;max-width:100%;height:auto;" />
+                            <img src="${qrUrl}" alt="QR Code para ${escapedLine}" width="${displaySize}" height="${displaySize}" style="border-radius:6px;border:1px solid #ddd;max-width:100%;height:auto;display:block;margin:6px auto;" />
                         </div>
                     </div>
                 `;
@@ -317,6 +392,222 @@
             // Clear input
             textInput.value = '';
         });
+    </script>
+    <!-- Animated decorative QR removed per user request -->
+    <!-- Script do plano de fundo interativo -->
+    <script>
+        (() => {
+            const canvas = document.getElementById('bg-canvas');
+            const ctx = canvas.getContext('2d');
+            let width = canvas.width = window.innerWidth;
+            let height = canvas.height = window.innerHeight;
+
+            // parâmetros
+            let particleCount = Math.floor((width * height) / 70000) + 50; // escala com tela
+            particleCount = Math.min(Math.max(particleCount, 60), 220);
+            const particles = [];
+            const mouse = { x: width / 2, y: height / 2, radius: Math.min(width, height) * 0.12 };
+
+            function rand(min, max) { return Math.random() * (max - min) + min; }
+
+            class Particle {
+                constructor() {
+                    this.reset(true);
+                }
+                reset(init) {
+                    this.x = rand(0, width);
+                    this.y = rand(0, height);
+                    const speed = rand(0.1, 0.6);
+                    const angle = rand(0, Math.PI * 2);
+                    this.vx = Math.cos(angle) * speed;
+                    this.vy = Math.sin(angle) * speed;
+                    this.r = rand(1.2, 3.8);
+                    this.h = rand(200, 260); // cor baseada em hue (azul/púrpura)
+                    this.alpha = rand(0.15, 0.9);
+                    if (!init) {
+                        // colocar no topo quando resetado normalmente
+                        this.x = rand(0, width);
+                        this.y = rand(0, height);
+                    }
+                }
+                update() {
+                    // interação com mouse: repulsão suave
+                    const dx = this.x - mouse.x;
+                    const dy = this.y - mouse.y;
+                    const dist = Math.sqrt(dx * dx + dy * dy);
+                    if (dist < mouse.radius) {
+                        const force = (mouse.radius - dist) / mouse.radius;
+                        const angle = Math.atan2(dy, dx);
+                        this.vx += Math.cos(angle) * force * 0.6;
+                        this.vy += Math.sin(angle) * force * 0.6;
+                    }
+
+                    // movimentação natural e leve atrito
+                    this.x += this.vx;
+                    this.y += this.vy;
+                    this.vx *= 0.985;
+                    this.vy *= 0.985;
+
+                    // wrap-around suave
+                    if (this.x < -50) this.x = width + 50;
+                    if (this.x > width + 50) this.x = -50;
+                    if (this.y < -50) this.y = height + 50;
+                    if (this.y > height + 50) this.y = -50;
+                }
+                draw(ctx) {
+                    ctx.beginPath();
+                    // gradient glow
+                    const g = ctx.createRadialGradient(this.x, this.y, 0, this.x, this.y, this.r * 6);
+                    g.addColorStop(0, `hsla(${this.h},85%,65%,${this.alpha * 0.9})`);
+                    g.addColorStop(0.5, `hsla(${this.h},75%,55%,${this.alpha * 0.45})`);
+                    g.addColorStop(1, `hsla(${this.h},65%,45%,0)`);
+                    ctx.fillStyle = g;
+                    ctx.arc(this.x, this.y, this.r * 6, 0, Math.PI * 2);
+                    ctx.fill();
+
+                    // core dot
+                    ctx.beginPath();
+                    ctx.fillStyle = `hsla(${this.h},85%,40%,${Math.min(this.alpha + 0.1,1)})`;
+                    ctx.arc(this.x, this.y, this.r, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+            }
+
+            function initParticles() {
+                particles.length = 0;
+                for (let i = 0; i < particleCount; i++) particles.push(new Particle());
+            }
+
+            function resize() {
+                width = canvas.width = window.innerWidth;
+                height = canvas.height = window.innerHeight;
+                mouse.radius = Math.min(width, height) * 0.12;
+                // recalcula quantidade (opcional)
+                particleCount = Math.floor((width * height) / 70000) + 50;
+                particleCount = Math.min(Math.max(particleCount, 60), 220);
+                initParticles();
+            }
+
+            let last = 0;
+            function animate(t) {
+                requestAnimationFrame(animate);
+                const dt = t - last; last = t;
+
+                ctx.clearRect(0, 0, width, height);
+
+                // linhas entre partículas próximas (sutil)
+                for (let i = 0; i < particles.length; i++) {
+                    const p = particles[i];
+                    p.update();
+                }
+
+                // desenhar partículas e conectar levemente
+                for (let i = 0; i < particles.length; i++) {
+                    particles[i].draw(ctx);
+                }
+
+                // desenhar linhas entre partículas próximas (limitado para performance)
+                ctx.beginPath();
+                for (let i = 0; i < particles.length; i++) {
+                    const a = particles[i];
+                    for (let j = i + 1; j < particles.length; j++) {
+                        const b = particles[j];
+                        const dx = a.x - b.x;
+                        const dy = a.y - b.y;
+                        const d = dx * dx + dy * dy;
+                        if (d < 16000) { // distancia < ~126px
+                            const alpha = (1 - d / 16000) * 0.08;
+                            ctx.strokeStyle = `rgba(120,110,255,${alpha})`;
+                            ctx.moveTo(a.x, a.y);
+                            ctx.lineTo(b.x, b.y);
+                        }
+                    }
+                }
+                ctx.stroke();
+            }
+
+            // mouse events
+            let isTouch = false;
+            window.addEventListener('mousemove', (e) => {
+                isTouch = false;
+                mouse.x = e.clientX;
+                mouse.y = e.clientY;
+            }, {passive:true});
+            window.addEventListener('touchmove', (e) => {
+                isTouch = true;
+                const t = e.touches[0];
+                if (t) { mouse.x = t.clientX; mouse.y = t.clientY; }
+            }, {passive:true});
+
+            // small parallax on container when moving
+            const container = document.querySelector('.container');
+            window.addEventListener('mousemove', (e) => {
+                const cx = (e.clientX / window.innerWidth - 0.5) * 8;
+                const cy = (e.clientY / window.innerHeight - 0.5) * 8;
+                if (container) container.style.transform = `translate3d(${cx}px, ${cy}px, 0)`;
+            });
+
+            window.addEventListener('resize', () => {
+                resize();
+            });
+
+            // estilo do canvas e z-index (colocado atrás da página)
+            canvas.style.position = 'fixed';
+            canvas.style.top = '0';
+            canvas.style.left = '0';
+            canvas.style.width = '100%';
+            canvas.style.height = '100%';
+            // garantir que o canvas fique atrás do conteúdo (evita partículas sobre os QR codes)
+            canvas.style.zIndex = '-1';
+            canvas.style.pointerEvents = 'none';
+
+            // ajustar container para aparecer acima
+            if (container) container.style.position = 'relative';
+            if (container) container.style.zIndex = '1';
+            // garantir que área de resultados também fique acima do canvas
+            const resultsDiv = document.getElementById('results');
+            if (resultsDiv) {
+                resultsDiv.style.position = 'relative';
+                resultsDiv.style.zIndex = '1';
+            }
+
+            initParticles();
+            requestAnimationFrame(animate);
+        })();
+    </script>
+    <script>
+        // Theme toggle: persist preference and apply class on body
+        (function(){
+            const toggle = document.getElementById('theme-toggle');
+            const body = document.body;
+            const KEY = 'qr_theme';
+
+            function applyTheme(name) {
+                if (name === 'dark') body.classList.add('dark'); else body.classList.remove('dark');
+                // update icon
+                if (!toggle) return;
+                toggle.innerHTML = name === 'dark' ?
+                    `<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z" fill="#ffdd57"/></svg>` :
+                    `<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M6.76 4.84l-1.8-1.79L3.17 4.85l1.79 1.8 1.8-1.81zM1 13h3v-2H1v2zm10 9h2v-3h-2v3zm7.07-3.07l1.79 1.79 1.79-1.79-1.79-1.79-1.79 1.79zM20 11v2h3v-2h-3zM4.22 19.78l1.79-1.79-1.79-1.79L2.43 18l1.79 1.78zM12 6a6 6 0 000 12 6 6 0 000-12z" fill="#374151"/></svg>`;
+            }
+
+            // init from localStorage or prefers-color-scheme
+            const stored = localStorage.getItem(KEY);
+            if (stored) {
+                applyTheme(stored);
+            } else {
+                const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+                applyTheme(prefersDark ? 'dark' : 'light');
+            }
+
+            if (toggle) {
+                toggle.addEventListener('click', () => {
+                    const next = body.classList.contains('dark') ? 'light' : 'dark';
+                    applyTheme(next);
+                    localStorage.setItem(KEY, next);
+                });
+            }
+        })();
     </script>
 </body>
 </html>
