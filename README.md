@@ -1,5 +1,7 @@
  # Gerador de QR Code (qr-generator)
 
+Link Site:https://mateuslima09.github.io/QR-CODE-LIMA/
+
 Este projeto é um gerador simples de QR Codes que roda inteiramente no navegador. Cole uma lista de IDs (um por linha) e o site gera um QR code por ID, exibido em cartões numerados. Ele foi pensado para uso rápido sem servidor — ideal para imprimir ou baixar QR codes.
 
 Funcionalidades principais
