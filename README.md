@@ -4,6 +4,8 @@ Página estática para gerar múltiplos QR codes com opções visuais, tema e pe
 
 Última atualização: 29 de outubro de 2025
 
+Link Site: https://mateuslima09.github.io/QR-CODE-LIMA/
+
 ## Visão geral
 
 Este projeto é um "single-file" (arquivo único) chamado `index.html` que contém a interface, estilos e scripts para gerar QR codes e personalizar a aparência da página. Ele usa a API pública de geração de QR (https://api.qrserver.com) para renderizar imagens QR no próprio navegador (mesma aba).
@@ -106,5 +108,6 @@ Nota sobre o contador
 Limitações e comportamento
 - O projeto usa um serviço externo (`api.qrserver.com`) para gerar as imagens dos QR Codes. Se preferir gerar QR totalmente offline, é possível integrar uma biblioteca JavaScript (ex: qrcodejs).
 - O tamanho solicitado para o QR pode ser automaticamente reduzido para caber na tela — o site aplica um limite responsivo para evitar que a imagem "estoure" o cartão.
+
 
 
