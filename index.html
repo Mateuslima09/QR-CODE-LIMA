@@ -9,6 +9,80 @@
     <meta name="theme-color" content="#667eea">
     <style>
         /* decorative header removed - no static placeholder here */
+
+        /* Settings gear (top-left) */
+        #settings-gear {
+            position: fixed;
+            top: 14px;
+            left: 14px;
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02));
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+            border: 1px solid rgba(255,255,255,0.04);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.38), inset 0 1px 0 rgba(255,255,255,0.02);
+            cursor: pointer;
+            z-index: 10000;
+            color: rgba(255,255,255,0.95);
+            transition: transform 180ms ease, box-shadow 180ms ease, opacity 200ms ease;
+        }
+        #settings-gear:hover { transform: translateY(-3px) scale(1.02); box-shadow: 0 14px 30px rgba(0,0,0,0.5); }
+        #settings-gear:focus { outline: none; box-shadow: 0 0 0 6px rgba(79,70,229,0.10); }
+        #settings-gear svg { width:22px; height:22px; display:block; }
+
+        /* settings drawer */
+        #settings-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.45);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 220ms ease;
+            z-index: 9998;
+        }
+        #settings-overlay.open { opacity: 1; pointer-events: auto; }
+
+        #settings-drawer {
+            position: fixed;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 320px;
+            background: linear-gradient(180deg, #0f1220, #0b0f18);
+            color: #fff;
+            transform: translateX(-110%);
+            transition: transform 300ms cubic-bezier(.2,.9,.3,1);
+            box-shadow: 4px 0 30px rgba(2,6,23,0.6);
+            z-index: 9999;
+            padding: 18px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        #settings-drawer.open { transform: translateX(0); }
+        #settings-drawer .settings-header { display:flex;align-items:center;justify-content:space-between;padding-bottom:6px;border-bottom:1px solid rgba(255,255,255,0.04); }
+        #settings-drawer .settings-body { padding-top:10px; }
+        .settings-row { display:flex;align-items:center;justify-content:space-between;padding:12px 6px; }
+        .settings-note { font-size:13px;color:rgba(255,255,255,0.6);padding:6px 6px; }
+
+    /* simple toggle switch */
+    .switch { position: relative; width:56px; height:30px; display:inline-block; }
+    /* make the hidden checkbox cover the whole switch so clicking the slider works */
+    .switch input { position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; padding: 0; opacity: 0; cursor: pointer; z-index: 2; }
+    .switch .slider { position:absolute; top:0;left:0;right:0;bottom:0;background:#444;border-radius:999px;transition:background 180ms; pointer-events: none; }
+        .switch .slider:before { content:''; position:absolute; left:4px; top:4px; width:22px; height:22px; background:#fff; border-radius:50%; transition: transform 180ms; }
+        .switch input:checked + .slider { background: linear-gradient(135deg,#6b46c1,#4f46e5); }
+        .switch input:checked + .slider:before { transform: translateX(26px); }
+
+        /* respect reduced motion */
+        @media (prefers-reduced-motion: reduce) {
+            #settings-drawer, #settings-overlay { transition: none; }
+        }
         body {
             display: flex;
             align-items: center; /* center vertically */
@@ -202,9 +276,10 @@
             color: #ddd;
         }
         body.dark .container {
-            background: #0b0d10;
+            /* menos preto: tom levemente mais claro para melhorar a leitura */
+            background: #0f1624; /* suave, não totalmente preto */
             color: #e6e6e6;
-            box-shadow: 0 14px 40px rgba(2,6,23,0.6);
+            box-shadow: 0 14px 40px rgba(2,6,23,0.45);
         }
         body.dark h1 { color: #f3f3f3; }
         body.dark textarea { background: rgba(255,255,255,0.02); color:#ddd; border-color: rgba(255,255,255,0.06); }
@@ -212,11 +287,36 @@
         body.dark label { color: #cfcfcf; }
         body.dark button { box-shadow: 0 8px 20px rgba(102,110,234,0.12); }
         body.dark #theme-toggle { background: rgba(20,24,34,0.85); }
+        /* when the drawer is open we hide the gear button with a smooth fade */
+        .gear-hidden { opacity: 0 !important; pointer-events: none !important; transform: translateY(-6px); transition: opacity 200ms ease, transform 200ms ease; }
+    /* Background theme variants (three tasteful options) */
+    body.bg-1 { background: linear-gradient(135deg, #7b8ef7 0%, #7b5ac7 100%); }
+    body.bg-2 { background: linear-gradient(135deg, #0f1724 0%, #0b1220 100%); }
+    body.bg-3 { background: linear-gradient(135deg, #28323a 0%, #3b4a5f 100%); }
+    /* swatch preview inside settings */
+    .swatch { width:36px;height:20px;border-radius:6px;border:1px solid rgba(0,0,0,0.12);display:inline-block;margin-left:auto; }
+    .swatch.s1 { background: linear-gradient(135deg, #7b8ef7 0%, #7b5ac7 100%); }
+    .swatch.s2 { background: linear-gradient(135deg, #0f1724 0%, #0b1220 100%); }
+    .swatch.s3 { background: linear-gradient(135deg, #28323a 0%, #3b4a5f 100%); }
+    /* language panel styling */
+    .lang-panel { margin-top: 12px; padding: 10px; border-radius: 10px; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.03); display:flex;flex-direction:column;gap:8px; }
+    .lang-panel .lang-title { font-weight:700; color: rgba(255,255,255,0.94); font-size:14px; }
+    .lang-row { display:flex; gap:12px; justify-content:center; padding-top:6px; }
+    .lang-btn { background: transparent; border: 1px solid rgba(255,255,255,0.04); color: #fff; cursor: pointer; display:flex;align-items:center;gap:8px;padding:8px 12px;border-radius:8px; }
+    .lang-btn:hover { background: rgba(255,255,255,0.02); }
+    .lang-btn.active { background: linear-gradient(135deg,#6b46c1,#4f46e5); box-shadow: 0 6px 18px rgba(79,70,229,0.12); }
     </style>
 </head>
 <body>
     <!-- Canvas de fundo para partículas interativas -->
     <canvas id="bg-canvas"></canvas>
+    <div id="settings-gear" title="Configurações" aria-label="Abrir configurações" role="button" tabindex="0" aria-expanded="false">
+        <!-- stylized gear icon: uses currentColor so it adapts to theme -->
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+            <path d="M12 15.5A3.5 3.5 0 1112 8.5 3.5 3.5 0 0112 15.5z" fill="currentColor" opacity="0.95" />
+            <path d="M19.4 15c.1-.3.1-.6.1-.9s0-.6-.1-.9l2-1.6-2-3.4-2.4.6c-.3-.2-.7-.4-1.1-.6L14 2h-4l-.7 4c-.4.2-.8.4-1.1.6L5.7 6.8 3.7 10.2l2 1.6c-.1.3-.1.6-.1.9s0 .6.1.9l-2 1.6 2 3.4 2.4-.6c.3.2.7.4 1.1.6L10 22h4l.7-4c.4-.2.8-.4 1.1-.6l2.4.6 2-3.4-2-1.6z" stroke="rgba(255,255,255,0.95)" stroke-width="0.9" fill="none" stroke-linejoin="round"/>
+        </svg>
+    </div>
     <div id="theme-toggle" title="Alternar tema" aria-label="Alternar tema" role="button">
         <!-- Sun / Moon icon (will be swapped by JS for a11y) -->
         <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -224,16 +324,16 @@
         </svg>
     </div>
     <div class="container">
-        <h1>Gerador de QR Code</h1>
+        <h1 id="app-title">Gerador de QR Code</h1>
         <textarea id="text-input" placeholder="Cole os IDs (um por linha) para gerar os QR Codes"></textarea>
         <div class="controls">
             <div class="row">
                 <div style="display:flex;align-items:center;gap:8px;">
-                    <label for="size-input" style="margin:0;color:#555;font-weight:600;">Tamanho do QR Code (px):</label>
+                    <label id="size-label" for="size-input" style="margin:0;color:#555;font-weight:600;">Tamanho do QR Code (px):</label>
                     <input type="number" id="size-input" min="100" max="500" value="256" class="small-number">
                 </div>
                 <div style="display:flex;align-items:center;gap:8px;">
-                    <label for="spacing-input" style="margin:0;color:#555;font-weight:600;">Espaçamento (px):</label>
+                    <label id="spacing-label" for="spacing-input" style="margin:0;color:#555;font-weight:600;">Espaçamento (px):</label>
                     <input type="number" id="spacing-input" min="0" max="200" value="20" class="small-number">
                 </div>
             </div>
@@ -247,6 +347,52 @@
         <div id="limit-message">Limite de 500 QR Codes atingido!</div>
     </div>
 
+    <!-- settings drawer + overlay -->
+    <div id="settings-overlay" aria-hidden="true"></div>
+    <aside id="settings-drawer" aria-hidden="true">
+        <div class="settings-header">
+            <strong id="settings-title">Configurações</strong>
+            <button id="settings-close" aria-label="Fechar">✕</button>
+        </div>
+            <div class="settings-body">
+            <div class="settings-row" id="particles-row">
+                <label id="particles-label" for="particles-toggle">Fundo animado</label>
+                <div class="switch">
+                    <input type="checkbox" id="particles-toggle" />
+                    <span class="slider"></span>
+                </div>
+            </div>
+                <!-- Background selector: three simple themed choices -->
+                <div class="settings-row" style="flex-direction:column;align-items:stretch;gap:8px;padding-top:6px;">
+                    <div id="background-title" style="font-weight:700;color:rgba(255,255,255,0.92);padding:6px 6px 0 6px;">Fundo do site</div>
+                    <label style="display:flex;align-items:center;gap:12px;padding:8px;border-radius:8px;cursor:pointer;background:transparent;">
+                        <input type="radio" name="bg-choice" value="bg-1" id="bg-choice-1">
+                        <span style="font-size:14px;color:rgba(255,255,255,0.92);">Gradiente Roxo (padrão)</span>
+                        <span class="swatch s1" aria-hidden="true"></span>
+                    </label>
+                    <label style="display:flex;align-items:center;gap:12px;padding:8px;border-radius:8px;cursor:pointer;background:transparent;">
+                        <input type="radio" name="bg-choice" value="bg-2" id="bg-choice-2">
+                        <span style="font-size:14px;color:rgba(255,255,255,0.92);">Nebulosa Escura</span>
+                        <span class="swatch s2" aria-hidden="true"></span>
+                    </label>
+                    <label style="display:flex;align-items:center;gap:12px;padding:8px;border-radius:8px;cursor:pointer;background:transparent;">
+                        <input type="radio" name="bg-choice" value="bg-3" id="bg-choice-3">
+                        <span style="font-size:14px;color:rgba(255,255,255,0.92);">Azul Acinzentado</span>
+                        <span class="swatch s3" aria-hidden="true"></span>
+                    </label>
+                </div>
+            <div id="settings-note" class="settings-note">Desative para poupar CPU ou se preferir fundo estático. Preferência salva no navegador.</div>
+            <!-- Language selector (bottom of drawer) -->
+            <div class="lang-panel" id="lang-panel" aria-label="Idioma">
+                <div class="lang-title" id="lang-title">Idioma</div>
+                <div class="lang-row">
+                    <button id="lang-pt" class="lang-btn" aria-pressed="false">🇧🇷 <span style="font-weight:600;">Português (BR)</span></button>
+                    <button id="lang-en" class="lang-btn" aria-pressed="false">🇺🇸 <span style="font-weight:600;">English</span></button>
+                </div>
+            </div>
+        </div>
+    </aside>
+
     <!-- Área onde os QR Codes gerados serão exibidos na mesma aba -->
     <div id="results" style="display:none; padding:20px; max-width:1200px; margin:20px auto;"></div>
 
@@ -259,6 +405,15 @@
     const limitMessage = document.getElementById('limit-message');
     const resetBtn = document.getElementById('reset-btn');
     const clearBtn = document.getElementById('clear-btn');
+    const appTitle = document.getElementById('app-title');
+    const sizeLabel = document.getElementById('size-label');
+    const spacingLabel = document.getElementById('spacing-label');
+    const settingsTitle = document.getElementById('settings-title');
+    const settingsNote = document.getElementById('settings-note');
+    const backgroundTitle = document.getElementById('background-title');
+    const particlesLabel = document.getElementById('particles-label');
+    const langPtBtn = document.getElementById('lang-pt');
+    const langEnBtn = document.getElementById('lang-en');
 
         // máximo de QR Codes permitidos (mude aqui para ajustar o limite)
         const MAX_QR = 500;
@@ -269,21 +424,32 @@
         updateCounter();
 
         function updateCounter() {
-            counterSpan.textContent = count;
+            // mostrar o contador formatado via i18n quando disponível
+            try {
+                const counterEl = document.getElementById('counter');
+                if (counterEl && typeof t === 'function') {
+                    counterEl.textContent = t('counter', { count, max: MAX_QR });
+                } else if (counterSpan) {
+                    counterSpan.textContent = count;
+                }
+            } catch (e) {
+                if (counterSpan) counterSpan.textContent = count;
+            }
             // mostrar o botão de reset sempre que houver pelo menos 1 QR gerado
             resetBtn.style.display = (count > 0) ? 'inline-block' : 'none';
 
             if (count >= MAX_QR) {
                 generateBtn.disabled = true;
-                limitMessage.style.display = 'block';
+                if (limitMessage && typeof t === 'function') limitMessage.textContent = t('limitMessage', { max: MAX_QR });
+                if (limitMessage) limitMessage.style.display = 'block';
             } else {
                 generateBtn.disabled = false;
-                limitMessage.style.display = 'none';
+                if (limitMessage) limitMessage.style.display = 'none';
             }
         }
 
         resetBtn.addEventListener('click', () => {
-            if (confirm('Tem certeza que deseja resetar o contador? Isso limpará o histórico de QR Codes gerados.')) {
+            if (confirm(t('confirmReset'))) {
                 count = 0;
                 localStorage.removeItem('qrCount');
                 updateCounter();
@@ -298,7 +464,7 @@
                 textInput.focus();
                 return;
             }
-            if (confirm('Deseja limpar o campo de IDs?')) {
+            if (confirm(t('clearConfirm'))) {
                 textInput.value = '';
                 textInput.focus();
             }
@@ -307,11 +473,11 @@
         generateBtn.addEventListener('click', () => {
             const inputText = textInput.value.trim();
             if (!inputText) {
-                alert('Por favor, cole os IDs para gerar os QR Codes.');
+                alert(t('promptNoIds'));
                 return;
             }
             if (count >= MAX_QR) {
-                alert(`Limite de ${MAX_QR} QR Codes atingido. Use o botão de reset se necessário.`);
+                alert(t('promptLimit', { max: MAX_QR }));
                 return;
             }
 
@@ -320,7 +486,7 @@
             const remaining = MAX_QR - count;
 
             if (numQRs > remaining) {
-                alert(`Você está tentando gerar ${numQRs} QR Codes, mas só restam ${remaining} no limite. Gere menos ou resete o contador.`);
+                alert(t('promptTooMany', { num: numQRs, remaining }));
                 return;
             }
 
@@ -334,12 +500,7 @@
             const containerDiv = document.querySelector('.container');
 
             // Monta o HTML dos resultados (um QR por linha e numerado)
-            let html = `
-                <div style="text-align:center;">
-                    <h1>QR Codes Gerados (${numQRs} itens)</h1>
-                    <button id="back-btn" style="background:#ff7f50;color:#fff;border:none;padding:8px 12px;border-radius:6px;cursor:pointer;margin:10px;box-shadow:0 6px 12px rgba(0,0,0,0.15);">Voltar</button>
-                    <div class="list" style="display:flex;flex-direction:column;gap:${spacing}px;align-items:center;margin-top:20px;">
-            `;
+            let html = `\n                <div style="text-align:center;">\n                    <h1>${escapeHtml(t('resultsTitle', { num: numQRs }))}</h1>\n                    <button id="back-btn" style="background:#ff7f50;color:#fff;border:none;padding:8px 12px;border-radius:6px;cursor:pointer;margin:10px;box-shadow:0 6px 12px rgba(0,0,0,0.15);">${escapeHtml(t('backBtn'))}</button>\n                    <div class="list" style="display:flex;flex-direction:column;gap:${spacing}px;align-items:center;margin-top:20px;">\n            `;
 
             // calcular tamanho visível do QR para não estourar o cartão quando a imagem for muito grande
             const viewportWidth = window.innerWidth || document.documentElement.clientWidth || 800;
@@ -353,22 +514,10 @@
             lines.forEach((line, idx) => {
                 const number = idx + 1;
                 const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=${size}x${size}&data=${encodeURIComponent(line)}`;
-                const escapedLine = line
-                    .replace(/&/g, '&amp;')
-                    .replace(/</g, '&lt;')
-                    .replace(/>/g, '&gt;')
-                    .replace(/"/g, '&quot;')
-                    .replace(/'/g, '&#39;');
+                const escapedLine = escapeHtml(line);
 
                 // cada card terá um único QR centralizado (horizontal) e um rótulo com o número
-                html += `
-                    <div class="card" style="width: ${displaySize + 40}px; padding:12px;border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,0.08);text-align:center;">
-                        <div class="card-title">QR Code ${number} - ID: ${escapedLine}</div>
-                        <div style="display:flex;justify-content:center;">
-                            <img src="${qrUrl}" alt="QR Code para ${escapedLine}" width="${displaySize}" height="${displaySize}" style="border-radius:6px;border:1px solid #ddd;max-width:100%;height:auto;display:block;margin:6px auto;" />
-                        </div>
-                    </div>
-                `;
+                html += `\n                    <div class="card" style="width: ${displaySize + 40}px; padding:12px;border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,0.08);text-align:center;">\n                        <div class="card-title">${escapeHtml(t('cardTitle', { number, id: line }))}</div>\n                        <div style="display:flex;justify-content:center;">\n                            <img src="${qrUrl}" alt="QR Code para ${escapedLine}" width="${displaySize}" height="${displaySize}" style="border-radius:6px;border:1px solid #ddd;max-width:100%;height:auto;display:block;margin:6px auto;" />\n                        </div>\n                    </div>\n                `;
             });
 
             html += `</div></div>`;
@@ -393,6 +542,114 @@
             textInput.value = '';
         });
     </script>
+    <!-- Internationalization (language selector) -->
+    <script>
+        // translations
+        const i18n = {
+            pt: {
+                title: 'Gerador de QR Code',
+                placeholder: 'Cole os IDs (um por linha) para gerar os QR Codes',
+                sizeLabel: 'Tamanho do QR Code (px):',
+                spacingLabel: 'Espaçamento (px):',
+                generateBtn: 'Gerar QR Codes',
+                clearBtn: 'Limpar IDs',
+                clearConfirm: 'Deseja limpar o campo de IDs?',
+                resetBtn: 'Resetar Contador',
+                confirmReset: 'Tem certeza que deseja resetar o contador? Isso limpará o histórico de QR Codes gerados.',
+                counter: 'QR Codes gerados: {count} / {max}',
+                limitMessage: 'Limite de {max} QR Codes atingido!',
+                settings: 'Configurações',
+                animatedBackground: 'Fundo animado',
+                background: 'Fundo do site',
+                settingsNote: 'Desative para poupar CPU ou se preferir fundo estático. Preferência salva no navegador.',
+                resultsTitle: 'QR Codes Gerados ({num} itens)',
+                backBtn: 'Voltar',
+                cardTitle: 'QR Code {number} - ID: {id}',
+                promptNoIds: 'Por favor, cole os IDs para gerar os QR Codes.',
+                promptLimit: 'Limite de {max} QR Codes atingido. Use o botão de reset se necessário.',
+                promptTooMany: 'Você está tentando gerar {num} QR Codes, mas só restam {remaining} no limite. Gere menos ou resete o contador.'
+                ,
+                languageLabel: 'Idioma'
+            },
+            en: {
+                title: 'QR Code Generator',
+                placeholder: 'Paste the IDs (one per line) to generate QR Codes',
+                sizeLabel: 'QR Code size (px):',
+                spacingLabel: 'Spacing (px):',
+                generateBtn: 'Generate QR Codes',
+                clearBtn: 'Clear IDs',
+                clearConfirm: 'Clear the IDs field?',
+                resetBtn: 'Reset Counter',
+                confirmReset: 'Are you sure you want to reset the counter? This will clear the history of generated QR Codes.',
+                counter: 'QR Codes generated: {count} / {max}',
+                limitMessage: 'Limit of {max} QR Codes reached!',
+                settings: 'Settings',
+                animatedBackground: 'Animated background',
+                background: 'Site background',
+                settingsNote: 'Disable to save CPU or prefer a static background. Preference saved in your browser.',
+                resultsTitle: 'Generated QR Codes ({num} items)',
+                backBtn: 'Back',
+                cardTitle: 'QR Code {number} - ID: {id}',
+                promptNoIds: 'Please paste the IDs to generate the QR Codes.',
+                promptLimit: 'Limit of {max} QR Codes reached. Use reset if needed.',
+                promptTooMany: 'You are trying to generate {num} QR Codes, but only {remaining} remain in the limit. Generate fewer or reset the counter.'
+                ,
+                languageLabel: 'Language'
+            }
+        };
+
+        function t(key, params) {
+            try {
+                const lang = localStorage.getItem('lang') || 'pt';
+                let str = (i18n[lang] && i18n[lang][key]) ? i18n[lang][key] : (i18n['pt'][key] || '');
+                if (params) {
+                    Object.keys(params).forEach(k => {
+                        str = str.replace(new RegExp('\\{' + k + '\\}','g'), params[k]);
+                    });
+                }
+                return str;
+            } catch (e) { return '' }
+        }
+
+        function escapeHtml(s){ return (s+'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
+
+        function applyLocale(lang){
+            try{
+                localStorage.setItem('lang', lang);
+                // texts
+                if (appTitle) appTitle.textContent = t('title');
+                if (textInput) textInput.placeholder = t('placeholder');
+                if (sizeLabel) sizeLabel.textContent = t('sizeLabel');
+                if (spacingLabel) spacingLabel.textContent = t('spacingLabel');
+                if (generateBtn) generateBtn.textContent = t('generateBtn');
+                if (clearBtn) clearBtn.textContent = t('clearBtn');
+                if (resetBtn) resetBtn.textContent = t('resetBtn');
+                if (limitMessage) limitMessage.textContent = t('limitMessage', { max: MAX_QR });
+                if (settingsTitle) settingsTitle.textContent = t('settings');
+                if (settingsNote) settingsNote.textContent = t('settingsNote');
+                if (backgroundTitle) backgroundTitle.textContent = t('background');
+                if (particlesLabel) particlesLabel.textContent = t('animatedBackground');
+                // language panel title
+                const langTitleEl = document.getElementById('lang-title');
+                if (langTitleEl) langTitleEl.textContent = t('languageLabel');
+                // highlight active language button
+                if (langPtBtn && langEnBtn) {
+                    if (lang === 'pt') { langPtBtn.classList.add('active'); langEnBtn.classList.remove('active'); langPtBtn.setAttribute('aria-pressed','true'); langEnBtn.setAttribute('aria-pressed','false'); }
+                    else { langEnBtn.classList.add('active'); langPtBtn.classList.remove('active'); langEnBtn.setAttribute('aria-pressed','true'); langPtBtn.setAttribute('aria-pressed','false'); }
+                }
+                // update counter text
+                updateCounter();
+            } catch(e){}
+        }
+
+        // wire language buttons
+        try {
+            const current = localStorage.getItem('lang') || 'pt';
+            applyLocale(current);
+            if (langPtBtn) langPtBtn.addEventListener('click', ()=> applyLocale('pt'));
+            if (langEnBtn) langEnBtn.addEventListener('click', ()=> applyLocale('en'));
+        } catch(e){}
+    </script>
     <!-- Animated decorative QR removed per user request -->
     <!-- Script do plano de fundo interativo -->
     <script>
@@ -401,6 +658,27 @@
             const ctx = canvas.getContext('2d');
             let width = canvas.width = window.innerWidth;
             let height = canvas.height = window.innerHeight;
+
+            // particle animation control: allow enabling/disabling and persist preference
+            let particlesEnabled = (localStorage.getItem('particles_enabled') !== 'false'); // default true
+
+            window.particlesControl = {
+                enable() {
+                    if (particlesEnabled) return;
+                    particlesEnabled = true;
+                    canvas.style.display = '';
+                    initParticles();
+                    requestAnimationFrame(animate);
+                    localStorage.setItem('particles_enabled', 'true');
+                },
+                disable() {
+                    particlesEnabled = false;
+                    // hide canvas and let the animate loop finish without scheduling new frames
+                    canvas.style.display = 'none';
+                    localStorage.setItem('particles_enabled', 'false');
+                },
+                isEnabled() { return particlesEnabled; }
+            };
 
             // parâmetros
             let particleCount = Math.floor((width * height) / 70000) + 50; // escala com tela
@@ -490,6 +768,8 @@
 
             let last = 0;
             function animate(t) {
+                // if disabled, stop scheduling further frames
+                if (!particlesEnabled) return;
                 requestAnimationFrame(animate);
                 const dt = t - last; last = t;
 
@@ -571,8 +851,14 @@
                 resultsDiv.style.zIndex = '1';
             }
 
-            initParticles();
-            requestAnimationFrame(animate);
+            if (particlesEnabled) {
+                initParticles();
+                requestAnimationFrame(animate);
+            } else {
+                // hide and clear canvas when disabled at startup
+                canvas.style.display = 'none';
+                ctx.clearRect(0,0,width,height);
+            }
         })();
     </script>
     <script>
@@ -607,6 +893,85 @@
                     localStorage.setItem(KEY, next);
                 });
             }
+        })();
+    </script>
+    <script>
+        // Settings drawer behavior: open/close and particles toggle
+        (function(){
+            const gear = document.getElementById('settings-gear');
+            const overlay = document.getElementById('settings-overlay');
+            const drawer = document.getElementById('settings-drawer');
+            const closeBtn = document.getElementById('settings-close');
+            const particlesToggle = document.getElementById('particles-toggle');
+
+            function openDrawer(){
+                overlay.classList.add('open');
+                drawer.classList.add('open');
+                overlay.setAttribute('aria-hidden','false');
+                drawer.setAttribute('aria-hidden','false');
+                // sync toggle state
+                if (window.particlesControl) particlesToggle.checked = window.particlesControl.isEnabled();
+                // hide gear button so it doesn't overlap the drawer header
+                try { if (gear) gear.classList.add('gear-hidden'); } catch(e){}
+            }
+            function closeDrawer(){
+                overlay.classList.remove('open');
+                drawer.classList.remove('open');
+                overlay.setAttribute('aria-hidden','true');
+                drawer.setAttribute('aria-hidden','true');
+                // restore gear visibility
+                try { if (gear) gear.classList.remove('gear-hidden'); } catch(e){}
+            }
+
+            if (gear) gear.addEventListener('click', openDrawer);
+            if (overlay) overlay.addEventListener('click', closeDrawer);
+            if (closeBtn) closeBtn.addEventListener('click', closeDrawer);
+
+            window.addEventListener('keydown', (e)=>{
+                if (e.key === 'Escape') closeDrawer();
+            });
+
+            if (particlesToggle) {
+                // initialize checkbox
+                try { particlesToggle.checked = window.particlesControl ? window.particlesControl.isEnabled() : true; } catch(e){}
+                particlesToggle.addEventListener('change', (e) => {
+                    const on = e.target.checked;
+                    if (window.particlesControl) {
+                        if (on) window.particlesControl.enable(); else window.particlesControl.disable();
+                    }
+                });
+                // make the whole settings row clickable as a fallback so users can click the label, the slider or anywhere on the row
+                const particlesRow = document.getElementById('particles-row');
+                if (particlesRow) {
+                    particlesRow.addEventListener('click', (e) => {
+                        // if click originated on the native input or the label, let the browser default behavior act
+                        const tag = (e.target && e.target.tagName) ? e.target.tagName.toLowerCase() : '';
+                        if (tag === 'input' || tag === 'label') return;
+                        // otherwise toggle checkbox programmatically
+                        particlesToggle.checked = !particlesToggle.checked;
+                        particlesToggle.dispatchEvent(new Event('change', { bubbles: true }));
+                    });
+                }
+            }
+            // Background choice handling (three variants)
+            try {
+                const storedBg = localStorage.getItem('bg_choice') || 'bg-1';
+                const bgRadios = document.querySelectorAll('input[name="bg-choice"]');
+                function applyBg(choice) {
+                    document.body.classList.remove('bg-1','bg-2','bg-3');
+                    document.body.classList.add(choice);
+                    localStorage.setItem('bg_choice', choice);
+                }
+                // init radios state
+                bgRadios.forEach(r => {
+                    if (r.value === storedBg) r.checked = true;
+                    r.addEventListener('change', (e) => {
+                        if (e.target.checked) applyBg(e.target.value);
+                    });
+                });
+                // apply stored background on load
+                applyBg(storedBg);
+            } catch (e) { /* ignore failures */ }
         })();
     </script>
 </body>
