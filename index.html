@@ -5,8 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gerador de QR Code</title>
     <!-- Favicon: pequeno ícone do tipo QR ao lado do nome da aba -->
-    <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2064%2064'%3E%3Crect%20width='64'%20height='64'%20rx='8'%20fill='%23667eea'/%3E%3Crect%20x='10'%20y='10'%20width='18'%20height='18'%20fill='%23ffffff'/%3E%3Crect%20x='36'%20y='10'%20width='18'%20height='18'%20fill='%23ffffff'/%3E%3Crect%20x='10'%20y='36'%20width='18'%20height='18'%20fill='%23ffffff'/%3E%3Crect%20x='30'%20y='30'%20width='6'%20height='6'%20fill='%23000'/%3E%3Crect%20x='40'%20y='30'%20width='6'%20height='6'%20fill='%23000'/%3E%3C/svg%3E">
-    <meta name="theme-color" content="#667eea">
+    <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2064%2064'%3E%3Crect%20width='64'%20height='64'%20rx='8'%20fill='%233aa236'/%3E%3Crect%20x='10'%20y='10'%20width='18'%20height='18'%20fill='%23ffffff'/%3E%3Crect%20x='36'%20y='10'%20width='18'%20height='18'%20fill='%23ffffff'/%3E%3Crect%20x='10'%20y='36'%20width='18'%20height='18'%20fill='%23ffffff'/%3E%3Crect%20x='30'%20y='30'%20width='6'%20height='6'%20fill='%23000'/%3E%3Crect%20x='40'%20y='30'%20width='6'%20height='6'%20fill='%23000'/%3E%3C/svg%3E">
+    <meta name="theme-color" content="#3aa236">
     <style>
         /* decorative header removed - no static placeholder here */
 
@@ -32,7 +32,7 @@
             transition: transform 180ms ease, box-shadow 180ms ease, opacity 200ms ease;
         }
         #settings-gear:hover { transform: translateY(-3px) scale(1.02); box-shadow: 0 14px 30px rgba(0,0,0,0.5); }
-        #settings-gear:focus { outline: none; box-shadow: 0 0 0 6px rgba(79,70,229,0.10); }
+    #settings-gear:focus { outline: none; box-shadow: 0 0 0 6px rgba(60,180,110,0.10); }
         #settings-gear svg { width:22px; height:22px; display:block; }
 
         /* settings drawer */
@@ -76,7 +76,7 @@
     .switch input { position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; padding: 0; opacity: 0; cursor: pointer; z-index: 2; }
     .switch .slider { position:absolute; top:0;left:0;right:0;bottom:0;background:#444;border-radius:999px;transition:background 180ms; pointer-events: none; }
         .switch .slider:before { content:''; position:absolute; left:4px; top:4px; width:22px; height:22px; background:#fff; border-radius:50%; transition: transform 180ms; }
-        .switch input:checked + .slider { background: linear-gradient(135deg,#6b46c1,#4f46e5); }
+        .switch input:checked + .slider { background: linear-gradient(135deg,#3aa236,#2e8b2e); }
         .switch input:checked + .slider:before { transform: translateX(26px); }
 
         /* respect reduced motion */
@@ -88,7 +88,7 @@
             align-items: center; /* center vertically */
             justify-content: center; /* center horizontally */
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
-            background: linear-gradient(135deg, #7b8ef7 0%, #7b5ac7 100%);
+            background: #ffffff; /* branco como solicitado */
             min-height: 100vh;
             margin: 0;
             padding: 48px 20px; /* small padding so centered container doesn't touch edges */
@@ -129,7 +129,7 @@
         }
         textarea:focus {
             outline: none;
-            border-color: #667eea;
+            border-color: #3aa236;
         }
         .controls {
             display: flex;
@@ -175,10 +175,10 @@
         }
         input[type="number"]:focus {
             outline: none;
-            border-color: #667eea;
+            border-color: #3aa236;
         }
         button {
-            background: linear-gradient(135deg, #667eea 0%, #845ad1 100%);
+            background: linear-gradient(135deg, #3aa236 0%, #2e8b2e 100%);
             color: white;
             border: none;
             padding: 12px 22px;
@@ -281,30 +281,74 @@
             color: #e6e6e6;
             box-shadow: 0 14px 40px rgba(2,6,23,0.45);
         }
+        /* quando quisermos uma aparência de nebulosa mais rica para o cartão no modo escuro */
+        .container.nebula {
+            background: linear-gradient(135deg, #0f1724 0%, #0b1220 100%);
+            color: #e6e6e6;
+            box-shadow: 0 18px 48px rgba(2,6,23,0.55);
+        }
         body.dark h1 { color: #f3f3f3; }
         body.dark textarea { background: rgba(255,255,255,0.02); color:#ddd; border-color: rgba(255,255,255,0.06); }
         body.dark input[type="number"], body.dark .small-number { background: rgba(255,255,255,0.02); color:#fff; border-color: rgba(255,255,255,0.06); }
         body.dark label { color: #cfcfcf; }
-        body.dark button { box-shadow: 0 8px 20px rgba(102,110,234,0.12); }
+    body.dark button { box-shadow: 0 8px 20px rgba(60,180,110,0.12); }
         body.dark #theme-toggle { background: rgba(20,24,34,0.85); }
         /* when the drawer is open we hide the gear button with a smooth fade */
         .gear-hidden { opacity: 0 !important; pointer-events: none !important; transform: translateY(-6px); transition: opacity 200ms ease, transform 200ms ease; }
-    /* Background theme variants (three tasteful options) */
-    body.bg-1 { background: linear-gradient(135deg, #7b8ef7 0%, #7b5ac7 100%); }
+        /* Light-mode overrides for drawer, overlay and gear so they are visible on white background */
+        body:not(.dark) #settings-overlay { background: rgba(0,0,0,0.08); }
+        body:not(.dark) #settings-drawer {
+            background: linear-gradient(180deg, #ffffff, #f7f8fb);
+            color: #111827;
+            box-shadow: 4px 0 30px rgba(16,24,40,0.06);
+            border-right: 1px solid rgba(16,24,40,0.04);
+        }
+        /* force dark text for any inline-white labels inside the drawer (overrides inline styles) */
+        body:not(.dark) #background-title { color: #111827 !important; }
+        body:not(.dark) #settings-drawer label, body:not(.dark) #settings-drawer label span { color: #111827 !important; }
+        body:not(.dark) #settings-drawer .settings-header strong { color: #111827 !important; }
+        body:not(.dark) .lang-panel .lang-title { color: #111827 !important; }
+        body:not(.dark) .lang-btn { color: #111827 !important; border-color: rgba(16,24,40,0.06) !important; background: transparent !important; }
+        body:not(.dark) .lang-btn:hover { background: rgba(16,24,40,0.04) !important; }
+        /* ensure active language button shows the green style in light mode */
+        body:not(.dark) .lang-btn.active {
+            background: linear-gradient(135deg,#3aa236,#2e8b2e) !important;
+            color: #fff !important;
+            box-shadow: 0 6px 18px rgba(60,180,110,0.12) !important;
+            border-color: rgba(60,180,110,0.12) !important;
+        }
+        /* ensure header separators and notes are readable */
+        body:not(.dark) #settings-drawer .settings-header { border-bottom-color: rgba(16,24,40,0.06); }
+        body:not(.dark) .settings-note { color: rgba(16,24,40,0.7); }
+        body:not(.dark) .lang-panel { background: rgba(0,0,0,0.02); border: 1px solid rgba(16,24,40,0.04); }
+        /* Gear visible on white: light background and darker icon */
+        body:not(.dark) #settings-gear {
+            background: linear-gradient(135deg,#ffffff,#f3f4f6);
+            color: #0b3b18; /* dark green icon color */
+            border: 1px solid rgba(16,24,40,0.06);
+            box-shadow: 0 10px 26px rgba(16,24,40,0.06);
+        }
+        body:not(.dark) #settings-gear:hover { transform: translateY(-3px) scale(1.02); box-shadow: 0 14px 30px rgba(16,24,40,0.08); }
+        body:not(.dark) #settings-close { background: #3aa236; color: #fff; border-radius:8px; padding:8px 10px; }
+    /* Background theme variants (four tasteful options) */
+    body.bg-1 { background: #ffffff; }
     body.bg-2 { background: linear-gradient(135deg, #0f1724 0%, #0b1220 100%); }
     body.bg-3 { background: linear-gradient(135deg, #28323a 0%, #3b4a5f 100%); }
+    /* fundo mais puxado para o cinza escuro */
+    body.bg-4 { background: linear-gradient(135deg, #141619 0%, #2b2f33 100%); }
     /* swatch preview inside settings */
     .swatch { width:36px;height:20px;border-radius:6px;border:1px solid rgba(0,0,0,0.12);display:inline-block;margin-left:auto; }
-    .swatch.s1 { background: linear-gradient(135deg, #7b8ef7 0%, #7b5ac7 100%); }
+    .swatch.s1 { background: linear-gradient(135deg,#ffffff,#f3f4f6); border:1px solid rgba(0,0,0,0.06); }
     .swatch.s2 { background: linear-gradient(135deg, #0f1724 0%, #0b1220 100%); }
     .swatch.s3 { background: linear-gradient(135deg, #28323a 0%, #3b4a5f 100%); }
+    .swatch.s4 { background: linear-gradient(135deg, #141619 0%, #2b2f33 100%); }
     /* language panel styling */
     .lang-panel { margin-top: 12px; padding: 10px; border-radius: 10px; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.03); display:flex;flex-direction:column;gap:8px; }
     .lang-panel .lang-title { font-weight:700; color: rgba(255,255,255,0.94); font-size:14px; }
     .lang-row { display:flex; gap:12px; justify-content:center; padding-top:6px; }
     .lang-btn { background: transparent; border: 1px solid rgba(255,255,255,0.04); color: #fff; cursor: pointer; display:flex;align-items:center;gap:8px;padding:8px 12px;border-radius:8px; }
     .lang-btn:hover { background: rgba(255,255,255,0.02); }
-    .lang-btn.active { background: linear-gradient(135deg,#6b46c1,#4f46e5); box-shadow: 0 6px 18px rgba(79,70,229,0.12); }
+    .lang-btn.active { background: linear-gradient(135deg,#3aa236,#2e8b2e); box-shadow: 0 6px 18px rgba(60,180,110,0.12); }
     </style>
 </head>
 <body>
@@ -314,7 +358,9 @@
         <!-- stylized gear icon: uses currentColor so it adapts to theme -->
         <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
             <path d="M12 15.5A3.5 3.5 0 1112 8.5 3.5 3.5 0 0112 15.5z" fill="currentColor" opacity="0.95" />
-            <path d="M19.4 15c.1-.3.1-.6.1-.9s0-.6-.1-.9l2-1.6-2-3.4-2.4.6c-.3-.2-.7-.4-1.1-.6L14 2h-4l-.7 4c-.4.2-.8.4-1.1.6L5.7 6.8 3.7 10.2l2 1.6c-.1.3-.1.6-.1.9s0 .6.1.9l-2 1.6 2 3.4 2.4-.6c.3.2.7.4 1.1.6L10 22h4l.7-4c.4-.2.8-.4 1.1-.6l2.4.6 2-3.4-2-1.6z" stroke="rgba(255,255,255,0.95)" stroke-width="0.9" fill="none" stroke-linejoin="round"/>
+            <!-- Use currentColor for the stroke so the icon respects the parent's color in both themes -->
+            <path d="M19.4 15c.1-.3.1-.6.1-.9s0-.6-.1-.9l2-1.6-2-3.4-2.4.6c-.3-.2-.7-.4-1.1-.6L14 2h-4l-.7 4c-.4.2-.8.4-1.1.6L5.7 6.8 3.7 10.2l2 1.6c-.1.3-.1.6-.1.9s0 .6.1.9l-2 1.6 2 3.4 2.4-.6c.3.2.7.4 1.1.6L10 22h4l.7-4c.4-.2.8-.4 1.1-.6l2.4.6 2-3.4-2-1.6z"
+                  stroke="currentColor" stroke-opacity="0.95" stroke-width="0.95" fill="none" stroke-linejoin="round"/>
         </svg>
     </div>
     <div id="theme-toggle" title="Alternar tema" aria-label="Alternar tema" role="button">
@@ -362,6 +408,7 @@
                     <span class="slider"></span>
                 </div>
             </div>
+            <div id="settings-note" class="settings-note">Desative para poupar CPU ou se preferir fundo estático. Preferência salva no navegador.</div>
                 <!-- Background selector: three simple themed choices -->
                 <div class="settings-row" style="flex-direction:column;align-items:stretch;gap:8px;padding-top:6px;">
                     <div id="background-title" style="font-weight:700;color:rgba(255,255,255,0.92);padding:6px 6px 0 6px;">Fundo do site</div>
@@ -380,8 +427,12 @@
                         <span style="font-size:14px;color:rgba(255,255,255,0.92);">Azul Acinzentado</span>
                         <span class="swatch s3" aria-hidden="true"></span>
                     </label>
+                    <label style="display:flex;align-items:center;gap:12px;padding:8px;border-radius:8px;cursor:pointer;background:transparent;">
+                        <input type="radio" name="bg-choice" value="bg-4" id="bg-choice-4">
+                        <span style="font-size:14px;color:rgba(255,255,255,0.92);">Escuro Acinzentado</span>
+                        <span class="swatch s4" aria-hidden="true"></span>
+                    </label>
                 </div>
-            <div id="settings-note" class="settings-note">Desative para poupar CPU ou se preferir fundo estático. Preferência salva no navegador.</div>
             <!-- Language selector (bottom of drawer) -->
             <div class="lang-panel" id="lang-panel" aria-label="Idioma">
                 <div class="lang-title" id="lang-title">Idioma</div>
@@ -680,11 +731,13 @@
                 isEnabled() { return particlesEnabled; }
             };
 
-            // parâmetros
-            let particleCount = Math.floor((width * height) / 70000) + 50; // escala com tela
-            particleCount = Math.min(Math.max(particleCount, 60), 220);
+            // parâmetros (ajustados para visual mais sutil / tom esverdeado)
+            // menos partículas por área, tamanhos menores, alpha reduzido e linhas mais finas
+            let particleCount = Math.floor((width * height) / 120000) + 30; // escala com tela (menos denso)
+            particleCount = Math.min(Math.max(particleCount, 40), 140);
             const particles = [];
-            const mouse = { x: width / 2, y: height / 2, radius: Math.min(width, height) * 0.12 };
+            // mouse radius menor para interação mais sutil
+            const mouse = { x: width / 2, y: height / 2, radius: Math.min(width, height) * 0.08 };
 
             function rand(min, max) { return Math.random() * (max - min) + min; }
 
@@ -699,9 +752,11 @@
                     const angle = rand(0, Math.PI * 2);
                     this.vx = Math.cos(angle) * speed;
                     this.vy = Math.sin(angle) * speed;
-                    this.r = rand(1.2, 3.8);
-                    this.h = rand(200, 260); // cor baseada em hue (azul/púrpura)
-                    this.alpha = rand(0.15, 0.9);
+                    // menor raio e alpha mais baixo para brilho discreto
+                    this.r = rand(0.9, 2.6);
+                    // tom mais esverdeado (verde-ciano suave)
+                    this.h = rand(120, 160);
+                    this.alpha = rand(0.06, 0.36);
                     if (!init) {
                         // colocar no topo quando resetado normalmente
                         this.x = rand(0, width);
@@ -714,10 +769,11 @@
                     const dy = this.y - mouse.y;
                     const dist = Math.sqrt(dx * dx + dy * dy);
                     if (dist < mouse.radius) {
+                        // repulsão bem suave para evitar movimentos agressivos
                         const force = (mouse.radius - dist) / mouse.radius;
                         const angle = Math.atan2(dy, dx);
-                        this.vx += Math.cos(angle) * force * 0.6;
-                        this.vy += Math.sin(angle) * force * 0.6;
+                        this.vx += Math.cos(angle) * force * 0.28;
+                        this.vy += Math.sin(angle) * force * 0.28;
                     }
 
                     // movimentação natural e leve atrito
@@ -734,18 +790,20 @@
                 }
                 draw(ctx) {
                     ctx.beginPath();
-                    // gradient glow
-                    const g = ctx.createRadialGradient(this.x, this.y, 0, this.x, this.y, this.r * 6);
-                    g.addColorStop(0, `hsla(${this.h},85%,65%,${this.alpha * 0.9})`);
-                    g.addColorStop(0.5, `hsla(${this.h},75%,55%,${this.alpha * 0.45})`);
-                    g.addColorStop(1, `hsla(${this.h},65%,45%,0)`);
+                    // gradient glow (menor alcance) e ponto central sutil
+                    const glowRadius = this.r * 4; // menos espalhamento
+                    const g = ctx.createRadialGradient(this.x, this.y, 0, this.x, this.y, glowRadius);
+                    g.addColorStop(0, `hsla(${this.h},55%,48%,${this.alpha * 0.85})`);
+                    g.addColorStop(0.6, `hsla(${this.h},45%,40%,${this.alpha * 0.28})`);
+                    g.addColorStop(1, `hsla(${this.h},35%,30%,0)`);
                     ctx.fillStyle = g;
-                    ctx.arc(this.x, this.y, this.r * 6, 0, Math.PI * 2);
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, glowRadius, 0, Math.PI * 2);
                     ctx.fill();
 
-                    // core dot
+                    // core dot (menor e mais suave)
                     ctx.beginPath();
-                    ctx.fillStyle = `hsla(${this.h},85%,40%,${Math.min(this.alpha + 0.1,1)})`;
+                    ctx.fillStyle = `hsla(${this.h},65%,36%,${Math.min(this.alpha + 0.06,1)})`;
                     ctx.arc(this.x, this.y, this.r, 0, Math.PI * 2);
                     ctx.fill();
                 }
@@ -759,10 +817,10 @@
             function resize() {
                 width = canvas.width = window.innerWidth;
                 height = canvas.height = window.innerHeight;
-                mouse.radius = Math.min(width, height) * 0.12;
-                // recalcula quantidade (opcional)
-                particleCount = Math.floor((width * height) / 70000) + 50;
-                particleCount = Math.min(Math.max(particleCount, 60), 220);
+                mouse.radius = Math.min(width, height) * 0.08;
+                // recalcula quantidade (opcional) - manter mesma densidade discreta definida acima
+                particleCount = Math.floor((width * height) / 120000) + 30;
+                particleCount = Math.min(Math.max(particleCount, 40), 140);
                 initParticles();
             }
 
@@ -787,6 +845,7 @@
                 }
 
                 // desenhar linhas entre partículas próximas (limitado para performance)
+                // linhas entre partículas próximas (sutil)
                 ctx.beginPath();
                 for (let i = 0; i < particles.length; i++) {
                     const a = particles[i];
@@ -795,15 +854,46 @@
                         const dx = a.x - b.x;
                         const dy = a.y - b.y;
                         const d = dx * dx + dy * dy;
-                        if (d < 16000) { // distancia < ~126px
-                            const alpha = (1 - d / 16000) * 0.08;
-                            ctx.strokeStyle = `rgba(120,110,255,${alpha})`;
+                        // reduzir alcance e alpha das linhas para ficar bem sutil
+                        if (d < 9000) { // distancia < ~95px
+                            const alpha = (1 - d / 9000) * 0.038; // linhas muito tênues
+                            ctx.strokeStyle = `rgba(60,180,110,${alpha})`; // tom esverdeado
                             ctx.moveTo(a.x, a.y);
                             ctx.lineTo(b.x, b.y);
                         }
                     }
                 }
                 ctx.stroke();
+
+                // desenhar triângulos leves entre cada partícula e seus 2 vizinhos mais próximos (para efeito de rede)
+                // para performance limitamos o alcance e quantidades
+                const triMaxDist = 6400; // ~80px squared threshold
+                ctx.lineWidth = 0.4;
+                for (let i = 0; i < particles.length; i++) {
+                    const a = particles[i];
+                    // encontra os dois vizinhos mais próximos
+                    let n1 = null, n2 = null;
+                    let d1 = Infinity, d2 = Infinity;
+                    for (let j = 0; j < particles.length; j++) {
+                        if (j === i) continue;
+                        const b = particles[j];
+                        const dx = a.x - b.x;
+                        const dy = a.y - b.y;
+                        const dist2 = dx * dx + dy * dy;
+                        if (dist2 < d1) { d2 = d1; n2 = n1; d1 = dist2; n1 = b; }
+                        else if (dist2 < d2) { d2 = dist2; n2 = b; }
+                    }
+                    if (n1 && n2 && d1 < triMaxDist && d2 < triMaxDist) {
+                        const alphaTri = Math.min(0.028, (1 - (d1 + d2) / (triMaxDist * 2)) * 0.028);
+                        ctx.strokeStyle = `rgba(60,180,110,${alphaTri})`;
+                        ctx.beginPath();
+                        ctx.moveTo(a.x, a.y);
+                        ctx.lineTo(n1.x, n1.y);
+                        ctx.lineTo(n2.x, n2.y);
+                        ctx.closePath();
+                        ctx.stroke();
+                    }
+                }
             }
 
             // mouse events
@@ -869,7 +959,21 @@
             const KEY = 'qr_theme';
 
             function applyTheme(name) {
-                if (name === 'dark') body.classList.add('dark'); else body.classList.remove('dark');
+                const container = document.querySelector('.container');
+                if (name === 'dark') {
+                    body.classList.add('dark');
+                    // body background dark gray when dark mode
+                    document.body.classList.remove('bg-1','bg-2','bg-3','bg-4');
+                    document.body.classList.add('bg-4');
+                    // give the card a nebulosa (bg-2 style)
+                    if (container) container.classList.add('nebula');
+                } else {
+                    body.classList.remove('dark');
+                    // body background white when light mode
+                    document.body.classList.remove('bg-1','bg-2','bg-3','bg-4');
+                    document.body.classList.add('bg-1');
+                    if (container) container.classList.remove('nebula');
+                }
                 // update icon
                 if (!toggle) return;
                 toggle.innerHTML = name === 'dark' ?
@@ -877,13 +981,16 @@
                     `<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M6.76 4.84l-1.8-1.79L3.17 4.85l1.79 1.8 1.8-1.81zM1 13h3v-2H1v2zm10 9h2v-3h-2v3zm7.07-3.07l1.79 1.79 1.79-1.79-1.79-1.79-1.79 1.79zM20 11v2h3v-2h-3zM4.22 19.78l1.79-1.79-1.79-1.79L2.43 18l1.79 1.78zM12 6a6 6 0 000 12 6 6 0 000-12z" fill="#374151"/></svg>`;
             }
 
-            // init from localStorage or prefers-color-scheme
+            // init from localStorage; default to LIGHT mode if not set
+            // If no theme stored, force light mode AND persist this default so first-visit users see light UI
+            // User can still toggle to dark manually and that choice will be persisted.
             const stored = localStorage.getItem(KEY);
             if (stored) {
                 applyTheme(stored);
             } else {
-                const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-                applyTheme(prefersDark ? 'dark' : 'light');
+                // Force light mode on first visit and save preference so subsequent loads remain consistent
+                applyTheme('light');
+                try { localStorage.setItem(KEY, 'light'); } catch(e){}
             }
 
             if (toggle) {
@@ -912,7 +1019,7 @@
                 // sync toggle state
                 if (window.particlesControl) particlesToggle.checked = window.particlesControl.isEnabled();
                 // hide gear button so it doesn't overlap the drawer header
-                try { if (gear) gear.classList.add('gear-hidden'); } catch(e){}
+                try { if (gear) { gear.classList.add('gear-hidden'); gear.setAttribute('aria-expanded','true'); } } catch(e){}
             }
             function closeDrawer(){
                 overlay.classList.remove('open');
@@ -920,10 +1027,19 @@
                 overlay.setAttribute('aria-hidden','true');
                 drawer.setAttribute('aria-hidden','true');
                 // restore gear visibility
-                try { if (gear) gear.classList.remove('gear-hidden'); } catch(e){}
+                try { if (gear) { gear.classList.remove('gear-hidden'); gear.setAttribute('aria-expanded','false'); } } catch(e){}
             }
 
-            if (gear) gear.addEventListener('click', openDrawer);
+            if (gear) {
+                gear.addEventListener('click', openDrawer);
+                // support keyboard activation (Enter / Space)
+                gear.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        openDrawer();
+                    }
+                });
+            }
             if (overlay) overlay.addEventListener('click', closeDrawer);
             if (closeBtn) closeBtn.addEventListener('click', closeDrawer);
 
@@ -954,23 +1070,40 @@
                 }
             }
             // Background choice handling (three variants)
-            try {
+                try {
                 const storedBg = localStorage.getItem('bg_choice') || 'bg-1';
+                const themeStored = localStorage.getItem('qr_theme');
                 const bgRadios = document.querySelectorAll('input[name="bg-choice"]');
                 function applyBg(choice) {
-                    document.body.classList.remove('bg-1','bg-2','bg-3');
+                    document.body.classList.remove('bg-1','bg-2','bg-3','bg-4');
                     document.body.classList.add(choice);
                     localStorage.setItem('bg_choice', choice);
                 }
-                // init radios state
+                // determine which background to apply on load:
+                // - if the user has a saved theme (qr_theme), respect it
+                // - if there is no saved theme (first visit), force light background (bg-1)
+                const container = document.querySelector('.container');
+                let effectiveBg = storedBg;
+                if (!themeStored) {
+                    // first visit (no theme chosen) -> default to light background
+                    effectiveBg = 'bg-1';
+                } else if (document.body.classList.contains('dark')) {
+                    // user explicitly chose dark theme -> force dark-gray background
+                    effectiveBg = 'bg-4';
+                }
+
+                // init radios state and listeners
                 bgRadios.forEach(r => {
-                    if (r.value === storedBg) r.checked = true;
+                    if (r.value === effectiveBg) r.checked = true;
                     r.addEventListener('change', (e) => {
                         if (e.target.checked) applyBg(e.target.value);
                     });
                 });
-                // apply stored background on load
-                applyBg(storedBg);
+
+                // apply the chosen effective background
+                applyBg(effectiveBg);
+                if (effectiveBg === 'bg-4' && container) container.classList.add('nebula');
+                else if (container) container.classList.remove('nebula');
             } catch (e) { /* ignore failures */ }
         })();
     </script>
